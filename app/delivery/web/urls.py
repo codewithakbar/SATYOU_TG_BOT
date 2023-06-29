@@ -16,13 +16,14 @@ Including another URLconf
 """
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import URLPattern, URLResolver, path
+from django.urls import URLPattern, URLResolver, include, path
 
 from app.config.application import DEBUG
 from app.config.web import STATIC_ROOT, STATIC_URL
 
 urlpatterns: list[URLResolver | URLPattern] = [
     path("admin/", admin.site.urls),
+    path("", include("app.apps.core.web.urls"))
 ]
 
 if DEBUG:
