@@ -1,9 +1,10 @@
+import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
 from aiogram.types import BotCommand
 
-from app.apps.core.bot.handlers import router as core_router
+from app.apps.core.bot.handlers import news_every_minute, router as core_router
 from app.config.bot import RUNNING_MODE, TG_TOKEN, RunningMode
 
 bot = Bot(TG_TOKEN, parse_mode="HTML")
@@ -36,8 +37,8 @@ async def on_startup() -> None:
     await _set_bot_commands()
 
 
-def run_polling() -> None:
-    dispatcher.run_polling(bot)
+async def run_polling() -> None:
+    await dispatcher.start_polling(bot)
 
 
 def run_webhook() -> None:
@@ -45,8 +46,12 @@ def run_webhook() -> None:
 
 
 if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    loop.create_task(news_every_minute())
+
+    
     if RUNNING_MODE == RunningMode.LONG_POLLING:
-        run_polling()
+        asyncio.run(run_polling())
     elif RUNNING_MODE == RunningMode.WEBHOOK:
         run_webhook()
     else:
